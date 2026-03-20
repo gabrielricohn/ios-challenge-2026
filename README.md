@@ -1,13 +1,5 @@
 <a id="readme-top"></a>
 
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![Unlicense License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
-
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
@@ -54,9 +46,9 @@ This project pretends to challenge the developer knowledge, debugging skills, de
 
 ### Built With
 
-* [![SwiftUI][SwiftUI]][SwiftUIUrl]
-* [![Tuist][Tuist]][TuistUrl]
-* [![SPM][Swift package manager]][SPMUrl]
+* [SwiftUI][SwiftUIUrl]
+* [Tuist][TuistUrl]
+* [Swift package manager][SPMUrl]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -83,9 +75,9 @@ Some of the tools we use we recommend installing using Homebrew
 
 We recommends having a Ruby Version Manager installed becase we will be working with some Ruby Gems. Here are some alternatives:
 
-* [![rbenv][rbenv]][rbenvUrl]
-* [![rvm][rvm]][rvmUrl]
-* [![asdf][asdf]][asdfUrl]
+* [rbenv][rbenvUrl]
+* [rvm][rvmUrl]
+* [asdf][asdfUrl]
 
 Most users work with rbenv.
 
