@@ -40,12 +40,15 @@ extension NetworkingTargetType {
 
     // MARK: - Request Base URL
     var requestBaseURL: URL {
-        return URL(string: "www.apple.com")!
+        return URL(string: "https://api.thecatapi.com/v1/")!
     }
 
     // MARK: - Request Headers
     var requestHeaders: [String: String]? {
-        ["Content-Type": "application/json"]
+        [
+            "Content-Type": "application/json",
+            "x-api-key": "YOUR-API-KEY"
+        ]
     }
 
     // MARK: - Request Sample Data
