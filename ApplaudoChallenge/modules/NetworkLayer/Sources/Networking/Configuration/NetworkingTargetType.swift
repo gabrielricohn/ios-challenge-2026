@@ -9,45 +9,33 @@ import Foundation
 import Moya
 
 // MARK: - Networking Target Type
-/// Networking Target main protocol. This protocol describes the necessary variables for the target to work.
-///
-/// - `Protocol Variables:
-///   - `requestBaseURL`: Base URL of the API.
-///   - `requestPath`: Custom path for the specific endpoint.
-///   - `requestHeaders`: Headers for the request.
-///   - `requestMethod`: HTTP method of the request.
-///   - `requestSampleData`: Sample data that facilitates unit testing.
+/// Describes a network endpoint. Conform to this protocol to define API targets.
+/// Each `request*` property maps to the corresponding Moya `TargetType` requirement.
 protocol NetworkingTargetType: TargetType {
     var requestBaseURL: URL { get }
     var requestPath: String { get }
     var requestHeaders: [String: String]? { get }
     var requestMethod: RequestMethod { get }
-    var requestSampleData: Data { get }
+    var requestSampleData: Data { get } // Return representative mock JSON for unit tests.
     var cachePolicy: URLRequest.CachePolicy { get }
 }
 
 // MARK: - Networking Target Type Default Configuration
-/// Default implementation of our custom Networking Target protocol.
-/// Here we define some common values that all our requests will have.
-///
-/// - `Default Variables:
-///   - `requestBaseURL`: Base URL of the API should be the same for all
-///   or at least most of the endpoints, so we define it here.
-///   - `requestHeaders`: Headers for the request should be common among all the requests,
-///   so we can define all those common headers here..
-///   - `requestSampleData`: Default Sample data for al request.
+/// Shared defaults for all endpoints. Override individual properties in your target only when needed.
 extension NetworkingTargetType {
 
     // MARK: - Request Base URL
+    // Shared across all endpoints; override per-target only if you need a different host.
     var requestBaseURL: URL {
         return URL(string: "https://api.thecatapi.com/v1/")!
     }
 
     // MARK: - Request Headers
+    // Common headers sent with every request. Add or override additional headers in your target as required.
     var requestHeaders: [String: String]? {
         [
             "Content-Type": "application/json",
-            "x-api-key": "YOUR-API-KEY"
+            "x-api-key": "YOUR-API-KEY" // TODO: Replace with your actual API key.
         ]
     }
 
@@ -58,19 +46,8 @@ extension NetworkingTargetType {
 }
 
 // MARK: - Networking Library Configuration
-/// Moya Library Implementation.
-/// In this block of code we add all the implementation needed for the Moya library to work.
-///
-/// Moya needs several variables to be defined, and each of them has a specific functionality:
-///
-/// - `Moya Variables:
-///   - `baseURL`: Base URL of the API.
-///   - `path`: Custom path for the specific endpoint.
-///   - `headers`: Headers for the request.
-///   - `method`: HTTP method of the request.
-///   - `sampleData`: Sample data that facilitates unit testing.
-///   - `validationType`: HTTP status codes that will be taken as success
-///   (default is `.successCodes`, this includes all the 2XX HTTP status codes)
+/// Bridges the custom `request*` properties to the Moya `TargetType` interface.
+/// These computed properties should not need modification; update their `request*` counterparts instead.
 extension NetworkingTargetType {
     // MARK: - Moya Base URL
     var baseURL: URL {
@@ -89,6 +66,7 @@ extension NetworkingTargetType {
 
     // MARK: - Moya Method
     var method: Moya.Method {
+        // Translates the custom RequestMethod enum to Moya's Method type.
         switch requestMethod {
         case .get: return .get
         case .patch: return .patch
@@ -104,20 +82,21 @@ extension NetworkingTargetType {
     }
 
     var validationType: ValidationType {
-        .successCodes
+        .successCodes // Only 2XX status codes are treated as successful responses.
     }
 
     var cachePolicy: URLRequest.CachePolicy {
-        .reloadIgnoringLocalCacheData
+        .reloadIgnoringLocalCacheData // Always fetch fresh data; bypass the local URL cache.
     }
 }
 
 // MARK: - Parameters Functions
-/// Helper function that allows the transformation of
-/// `Encodable Objects` into `[Sring: Any]` dictionaries so they can be easely injected in to the endpoint task.
+/// Convenience helper to encode an `Encodable` model into a `[String: Any]` dictionary,
+/// suitable for use as URL query parameters or a JSON request body task.
 extension NetworkingTargetType {
     func parametersAsDictionary<T: Encodable>(_ parameters: T,
                                               with encoder: JSONEncoder = JSONEncoder()) -> [String: Any] {
+        // Falls back to an empty dictionary if encoding fails — handle this case in your target if needed.
         encoder.encodeAsDictionary(parameters) ?? [:]
     }
 }

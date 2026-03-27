@@ -12,7 +12,7 @@ import Combine
 // MARK: - Network Error
 /// Lightweight domain error type that wraps common networking failures.
 /// Candidates can extend this enum with additional cases as needed.
-enum NetworkError: Error, LocalizedError {
+public enum NetworkError: Error, LocalizedError {
     /// The server returned an unexpected status code.
     case serverError(statusCode: Int, data: Data)
     /// The response data could not be decoded into the expected type.
@@ -20,7 +20,7 @@ enum NetworkError: Error, LocalizedError {
     /// A generic/unknown failure.
     case unknown(underlying: Error)
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .serverError(let code, _):
             return "Server returned status code \(code)."
@@ -33,26 +33,16 @@ enum NetworkError: Error, LocalizedError {
 }
 
 // MARK: - Networking Requester Type
-/// NetworkingRequesterType protocol,
-/// is the main build block for the Networking Requester,
-/// all classes or structures that will be defined as Networking Requesters need to implement this main protocol.
-///
-/// - `Protocol Functions`:
-///   -`execute`: Main and only function of the protocol,
-///   here needs to be implemented all the logic of the networking framework to make the connection to the API.
+/// Core networking abstraction. Any type conforming to this protocol can execute API requests.
+/// Implement `execute` to drive the full request lifecycle using the provided `NetworkingTargetType`.
 protocol NetworkingRequesterType {
-    /// - `Function Properties`:
-    ///  - `request`: Custom `NetworkingTargetType` object
-    ///  that will have all the information of the endpoints that will be executed.
-    /// - `Returns`: Either a `NetworkError` or the raw response `Data`.
+    /// Executes a network request and returns a raw-data publisher.
+    /// - Parameter request: The endpoint descriptor conforming to `NetworkingTargetType`.
     func execute(request: NetworkingTargetType) -> AnyPublisher<Data, NetworkError>
 }
 
 // MARK: - Networking Requester
-/// Implementation of the `NetworkingRequesterType` protocol.
-///
-/// -  `Dependencies Needed`:
-///   - `provider`: Custom `MoyaProvider` that has all the configurations for the current session.
+/// Concrete implementation of `NetworkingRequesterType` backed by a Moya `MoyaProvider<MultiTarget>`.
 struct NetworkingRequester: NetworkingRequesterType {
     // MARK: - Properties
     private let provider: MoyaProvider<MultiTarget>
@@ -66,14 +56,17 @@ struct NetworkingRequester: NetworkingRequesterType {
 
     func execute(request: NetworkingTargetType) -> AnyPublisher<Data, NetworkError> {
         var task: Moya.Cancellable?
-        let provider = provider
+        let provider = provider // Captured locally to avoid reference issues inside the closure.
 
+        // Wrap the callback-based Moya API in a Combine Future so callers get a single-value publisher.
         return Deferred { Future { seal in
+            // Store the cancellable so it can be cancelled later if the subscriber disposes.
             task = provider.request(MultiTarget(request)) { result in
                 switch result {
                 case .success(let response):
                     let statusCode = response.statusCode
-                    
+
+                    // Reject any response outside the 2XX range as a server error.
                     guard (200...299).contains(statusCode) else {
                         seal(.failure(.serverError(statusCode: statusCode, data: response.data)))
                         return
@@ -81,32 +74,32 @@ struct NetworkingRequester: NetworkingRequesterType {
 
                     seal(.success(response.data))
                 case .failure(let error):
+                    // Moya-level failures (e.g. no connection) map to the generic domain error.
                     seal(.failure(.unknown(underlying: error)))
                 }
             }
         }}
+        // Propagate Combine cancellation back to the in-flight Moya task.
         .handleEvents(receiveCancel: { task?.cancel() })
         .eraseToAnyPublisher()
     }
 }
 
 // MARK: - Default Implementation
-/// Default Implementation of `NetworkingRequesterType` protocol.
-/// This default implementation just calls the `execute` implementation
-/// inside our `NetworkingRequester` and then decodes the data into the Generic Decodable object.
+/// Convenience overload that decodes the raw response into a `Decodable` type.
+/// Reuses the raw-data `execute` and layers Combine's `decode` operator on top.
 extension NetworkingRequesterType {
-    /// - `Function Properties`:
-    ///  - `request`: Custom `NetworkingTargetType` object that will have all the information
-    ///  of the endpoints that will be executed.
-    ///  - `decoder`: JSONDecoder that will be used to decode the data.
-    /// - `Returns`: Either a `NetworkError` or a decoded `T` object.
+    /// - Parameters:
+    ///   - request: The endpoint descriptor.
+    ///   - decoder: `JSONDecoder` to use; defaults to a standard instance.
     func execute<T: Decodable>(
         request: NetworkingTargetType,
         using decoder: JSONDecoder = .init()
     ) -> AnyPublisher<T, NetworkError> {
-        execute(request: request)
+        execute(request: request) // Reuse the raw-data publisher.
             .decode(type: T.self, decoder: decoder)
             .mapError { error in
+                // Preserve any NetworkError that passed through; wrap all others as decoding failures.
                 if let networkError = error as? NetworkError {
                     return networkError
                 }

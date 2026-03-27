@@ -8,10 +8,10 @@
 import Moya
 
 // MARK: - Cat Information Target
-/// Defines all available endpoints for the Cat Information API.
+/// Sample target — use this as a reference when building new service targets.
 ///
 /// Each case represents a distinct API operation. To add a new endpoint,
-/// declare a new case here and handle it in each computed property below.
+/// declare a new case here and handle it in every computed property below.
 enum CatInformationTarget {
     /// Fetches a random cat image from the API.
     case getCatImage
@@ -23,7 +23,7 @@ extension CatInformationTarget: NetworkingTargetType {
     var requestPath: String {
         switch self {
         case .getCatImage:
-            return "images/"
+            return "images/search" // Full URL: https://api.thecatapi.com/v1/images/search
         }
     }
 
@@ -35,7 +35,7 @@ extension CatInformationTarget: NetworkingTargetType {
         }
     }
 
-    /// The Moya task that describes the request body/parameters for each endpoint.
+    /// The Moya task that describes the request body or query parameters for each endpoint.
     var task: Moya.Task {
         switch self {
         case .getCatImage:
