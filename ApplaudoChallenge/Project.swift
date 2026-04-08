@@ -20,7 +20,9 @@ let project = Project(
                 "ApplaudoChallenge/Sources",
                 "ApplaudoChallenge/Resources",
             ],
-            dependencies: []
+            dependencies: [
+                .target(name: "NetworkLayer"),
+            ]
         ),
         .target(
             name: "ApplaudoChallengeTests",
@@ -32,6 +34,30 @@ let project = Project(
                 "ApplaudoChallenge/Tests"
             ],
             dependencies: [.target(name: "ApplaudoChallenge")]
+        ),
+        .target(
+            name: "NetworkLayer",
+            destinations: .iOS,
+            product: .staticFramework,
+            bundleId: "dev.tuist.NetworkLayer",
+            infoPlist: .default,
+            buildableFolders: [
+                "modules/NetworkLayer/Sources",
+            ],
+            dependencies: [
+                .external(name: "Moya"),
+            ]
+        ),
+        .target(
+            name: "NetworkLayerTests",
+            destinations: .iOS,
+            product: .unitTests,
+            bundleId: "dev.tuist.NetworkLayerTests",
+            infoPlist: .default,
+            buildableFolders: [
+                "modules/NetworkLayer/NetworkLayerTest",
+            ],
+            dependencies: [.target(name: "NetworkLayer")]
         ),
     ]
 )
