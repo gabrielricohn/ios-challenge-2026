@@ -124,6 +124,6 @@ Use the components and theme tokens already available in the project.
 
 ## Time Expectation
 
-You have **5 calendar days** from receiving this challenge. Focus on quality over quantity — a well-implemented core is worth more than rushed extras.
+You have **1 calendar day** from receiving this challenge. Focus on quality over quantity — a well-implemented core is worth more than rushed extras.
 
 Good luck.
