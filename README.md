@@ -134,22 +134,6 @@ mise install tuist@4.148.1
 mise use tuist@4.148.1
 ```
 
-* Arkana
-
-At this point you need to install Arkana create the .env files. [Arkana][ArkanaUrl]
-
-```sh
-nano .env
-nano .env.development
-```
-
-Then execute the bundler
-
-```sh
-bundle install #only if it was not executed before
-bundle exec arkana -c .arkana.yml -f Development
-```
-
 ### Installation
 
 1. Clone/Fork the repo
