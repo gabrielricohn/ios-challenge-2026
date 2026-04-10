@@ -39,7 +39,9 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-This project pretends to challenge the developer knowledge, debugging skills, design pattern application, etc. 
+This repository contains the iOS Coding Challenge, designed to evaluate the knowledge and technical proficiency of candidates applying for an iOS Developer position at Applaudo. It also aims to assess problem-solving abilities, debugging skills, and the application of design patterns.
+
+Please read all the information in this README carefully and follow the instructions as closely as possible.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -151,19 +153,30 @@ mise use tuist@4.148.1
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- CONTRIBUTING -->
-## Contributing
+<!-- DELIVERABLE -->
+## Deliverables
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+1. A link to your forked repository with the completed challenge.
+    a. Work on your forked repository
+    b. Tag the following people for the review:
+      - Rodrigo Rovelo (RRovelo-Applaudo)
+      - Christian Rivera (carivas-applaudo)
+      - Oscar Navidad (onavidad-applaudo)
+      - Ricardo Guillen (rguillen-applaudo)
+2. A brief `SOLUTION.md` file in the root of the project explaining:
+   - Architecture decisions you made and why.
+   - Any trade-offs or assumptions.
+   - What you would improve given more time.
+3. The app should **compile and run** on Xcode (min 26.1.1 - max latest) / iOS Simulator.
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+<!-- TIME FRAME -->
+## Time Expectation
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+You have **1 calendar day** from receiving this challenge. Focus on quality over quantity — a well-implemented core is worth more than rushed extras.
+
+Thank you in your interest of being part of the Applaudo iOS Team, we really hope you like the challenge and we hope to test your knowledge about iOS Development, if you have any doubts about the general instructions please ask your HR contact so they can contact us and give you an answer as soon as possible.
+
+Good luck!
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
@@ -176,7 +189,6 @@ Use this space to list resources you find helpful and would like to give credit 
 * Ricardo Guillen
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
