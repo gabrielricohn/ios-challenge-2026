@@ -111,20 +111,3 @@ Use the components and theme tokens already available in the project.
 | **No Crashes** | A crash in the app will implies disqualification |
 
 ---
-
-## Deliverables
-
-1. A link to your forked repository with the completed challenge.
-2. A brief `SOLUTION.md` file in the root of the project explaining:
-   - Architecture decisions you made and why.
-   - Any trade-offs or assumptions.
-   - What you would improve given more time.
-3. The app should **compile and run** on the latest Xcode / iOS Simulator.
-
----
-
-## Time Expectation
-
-You have **1 calendar day** from receiving this challenge. Focus on quality over quantity — a well-implemented core is worth more than rushed extras.
-
-Good luck.
