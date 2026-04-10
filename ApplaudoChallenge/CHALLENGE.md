@@ -90,7 +90,7 @@ Use the components and theme tokens already available in the project.
 ## Technical Expectations
 
 - Use the **architecture and patterns** that best demonstrate your experience (MVVM, Clean, etc.).
-- Use **Combine** for reactive data flow — the networking layer is already built around it.
+- Preferably use **Combine** for reactive data flow.
 - Use the **existing UI components and theme** — do not reinvent them. Extend them if needed.
 - Write code that is **readable, testable, and well-structured**.
 - Feel free to add any additional libraries through SPM/Tuist if you can justify the choice.
@@ -108,6 +108,7 @@ Use the components and theme tokens already available in the project.
 | **Local Storage** | Appropriate choice and implementation of a persistence solution |
 | **Swift & SwiftUI** | Idiomatic use of the language and framework |
 | **Bonus** | Pagination, form validation, unit tests, any thoughtful extras |
+| **No Crashes** | A crash in the app will implies disqualification |
 
 ---
 
