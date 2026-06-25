@@ -70,13 +70,46 @@ final class AddCatViewModel: ObservableObject {
     @Published var showSaveConfirmation = false
     @Published var saveErrorMessage: String?
     @Published var savedCats: [RegisteredCat] = []
-    @Published var isShowingForm = false
+    @Published var showValidationErrors = false
+
+    // MARK: - Validation
+
+    private enum Validation {
+        static let minimumNameLength = 2
+
+        static func nameError(for value: String) -> String? {
+            let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmed.isEmpty { return "Name is required." }
+            if trimmed.count < minimumNameLength {
+                return "Name must be at least \(minimumNameLength) characters."
+            }
+            return nil
+        }
+
+        static func breedError(for value: String) -> String? {
+            if value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                return "Breed is required."
+            }
+            return nil
+        }
+
+        static func ageError(for value: String) -> String? {
+            let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmed.isEmpty { return "Age is required." }
+            guard let ageValue = Int(trimmed) else { return "Age must be a valid number." }
+            if ageValue <= 0 { return "Age must be a positive number." }
+            return nil
+        }
+
+        static func descriptionError(for value: String) -> String? {
+            if value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                return "Description is required."
+            }
+            return nil
+        }
+    }
 
     // MARK: - Computed Properties
-
-    var shouldShowEmptyState: Bool {
-        savedCats.isEmpty && !isShowingForm
-    }
 
     var stepTitles: [String] {
         Step.allCases.map(\.title)
@@ -103,19 +136,27 @@ final class AddCatViewModel: ObservableObject {
     }
 
     var canProceed: Bool {
-        switch currentStep {
-        case .name:
-            return !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        case .breed:
-            return !breed.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        case .age:
-            guard let ageValue = Int(age.trimmingCharacters(in: .whitespacesAndNewlines)) else {
-                return false
-            }
-            return ageValue > 0
-        case .description:
-            return !description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        }
+        validationError(for: currentStep) == nil
+    }
+
+    var nameValidationError: String? {
+        guard showValidationErrors, currentStep == .name else { return nil }
+        return Validation.nameError(for: name)
+    }
+
+    var breedValidationError: String? {
+        guard showValidationErrors, currentStep == .breed else { return nil }
+        return Validation.breedError(for: breed)
+    }
+
+    var ageValidationError: String? {
+        guard showValidationErrors, currentStep == .age else { return nil }
+        return Validation.ageError(for: age)
+    }
+
+    var descriptionValidationError: String? {
+        guard showValidationErrors, currentStep == .description else { return nil }
+        return Validation.descriptionError(for: description)
     }
 
     var filteredBreeds: [CatBreed] {
@@ -140,10 +181,6 @@ final class AddCatViewModel: ObservableObject {
         self.catService = catService
         self.storage = storage
         loadSavedCats()
-
-        if !savedCats.isEmpty {
-            isShowingForm = true
-        }
     }
 
     // MARK: - Actions
@@ -152,17 +189,19 @@ final class AddCatViewModel: ObservableObject {
         savedCats = storage.fetchAll()
     }
 
-    func startAddingCat() {
-        isShowingForm = true
-    }
-
     func goBack() {
         guard canGoBack, let previousStep = Step(rawValue: currentStep.rawValue - 1) else { return }
+        showValidationErrors = false
         currentStep = previousStep
     }
 
     func goForward() {
-        guard canProceed else { return }
+        guard validateCurrentStep() else {
+            showValidationErrors = true
+            return
+        }
+
+        showValidationErrors = false
 
         if isLastStep {
             saveCat()
@@ -173,6 +212,10 @@ final class AddCatViewModel: ObservableObject {
                 fetchBreeds()
             }
         }
+    }
+
+    func clearValidationErrors() {
+        showValidationErrors = false
     }
 
     func selectBreed(_ selectedBreed: CatBreed) {
@@ -233,5 +276,25 @@ final class AddCatViewModel: ObservableObject {
         age = ""
         description = ""
         saveErrorMessage = nil
+        showValidationErrors = false
+    }
+
+    // MARK: - Private Helpers
+
+    private func validateCurrentStep() -> Bool {
+        validationError(for: currentStep) == nil
+    }
+
+    private func validationError(for step: Step) -> String? {
+        switch step {
+        case .name:
+            return Validation.nameError(for: name)
+        case .breed:
+            return Validation.breedError(for: breed)
+        case .age:
+            return Validation.ageError(for: age)
+        case .description:
+            return Validation.descriptionError(for: description)
+        }
     }
 }
