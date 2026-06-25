@@ -15,6 +15,7 @@ import Moya
 enum CatInformationTarget {
     /// Fetches a random cat image from the API.
     case getCatImage
+    case getCatBreeds
 }
 
 // MARK: - NetworkingTargetType Conformance
@@ -24,13 +25,15 @@ extension CatInformationTarget: NetworkingTargetType {
         switch self {
         case .getCatImage:
             return "images/search" // Full URL: https://api.thecatapi.com/v1/images/search
+        case .getCatBreeds:
+            return "breeds"
         }
     }
 
     /// The HTTP method used for each endpoint.
     var requestMethod: RequestMethod {
         switch self {
-        case .getCatImage:
+        case .getCatImage, .getCatBreeds:
             return .get
         }
     }
@@ -38,7 +41,7 @@ extension CatInformationTarget: NetworkingTargetType {
     /// The Moya task that describes the request body or query parameters for each endpoint.
     var task: Moya.Task {
         switch self {
-        case .getCatImage:
+        case .getCatImage, .getCatBreeds:
             return .requestPlain
         }
     }

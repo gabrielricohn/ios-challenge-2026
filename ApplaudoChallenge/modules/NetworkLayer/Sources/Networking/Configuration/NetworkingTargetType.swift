@@ -35,7 +35,7 @@ extension NetworkingTargetType {
     var requestHeaders: [String: String]? {
         [
             "Content-Type": "application/json",
-            "x-api-key": "YOUR-API-KEY" // TODO: Replace with your actual API key.
+            "x-api-key": "live_8bWK262vYZWXmB9aeVe0oWZZbbd0YPcRsKUHgiAe69HSLMIzclJu7dXB6dctDQQK" // TODO: Replace with your actual API key.
         ]
     }
 
