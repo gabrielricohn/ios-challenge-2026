@@ -45,6 +45,15 @@ struct CatBreedsView: View {
                             .onTapGesture {
                                 selectedBreed = breed
                             }
+                            .onAppear {
+                                viewModel.loadMoreIfNeeded(for: breed)
+                            }
+                        }
+
+                        if viewModel.isLoadingMore {
+                            ProgressView()
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, AppTheme.Spacing.md)
                         }
                     }
                     .padding(.horizontal, AppTheme.Spacing.md)
