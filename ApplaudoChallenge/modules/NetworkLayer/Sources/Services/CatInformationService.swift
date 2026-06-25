@@ -12,6 +12,7 @@ import Moya
 // MARK: - Cat Information Service Type
 public protocol CatInformationServiceType {
     func getCatBreeds() -> AnyPublisher<CatBreeds, NetworkError>
+    func breedImageURL(for referenceImageID: String?) -> URL?
 }
 
 // MARK: - Cat Information Service
@@ -31,5 +32,13 @@ public struct CatInformationService: CatInformationServiceType {
     // MARK: - Functionality
     public func getCatBreeds() -> AnyPublisher<CatBreeds, NetworkError> {
         requester.execute(request: CatInformationTarget.getCatBreeds)
+    }
+
+    public func breedImageURL(for referenceImageID: String?) -> URL? {
+        guard let referenceImageID, !referenceImageID.isEmpty else { return nil }
+
+        return CatInformationTarget
+            .getCatBreedImage(referenceImageId: referenceImageID)
+            .requestURL
     }
 }

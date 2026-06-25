@@ -43,7 +43,6 @@ struct CatBreedsView: View {
                                 imageSystemName: "cat"
                             )
                             .onTapGesture {
-                                print("cell tapped")
                                 selectedBreed = breed
                             }
                         }
@@ -58,7 +57,7 @@ struct CatBreedsView: View {
         }
         .navigationTitle("Cat Breeds")
         .navigationDestination(item: $selectedBreed) { breed in
-            
+            CatBreedDetailView(viewModel: CatBreedDetailViewModel(breed: breed))
         }
         .task {
             if viewModel.breeds.isEmpty {
