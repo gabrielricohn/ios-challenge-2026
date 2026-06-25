@@ -105,10 +105,13 @@ final class MockCatInformationService: CatInformationServiceType {
 
     var breedsResult: Result<CatBreeds, NetworkError> = .success([])
 
-    func getCatBreeds() -> AnyPublisher<CatBreeds, NetworkError> {
+    func getCatBreeds(page: Int, limit: Int) -> AnyPublisher<CatBreeds, NetworkError> {
         switch breedsResult {
         case .success(let breeds):
-            return Just(breeds)
+            let startIndex = page * limit
+            let pageBreeds = Array(breeds.dropFirst(startIndex).prefix(limit))
+
+            return Just(pageBreeds)
                 .setFailureType(to: NetworkError.self)
                 .eraseToAnyPublisher()
         case .failure(let error):

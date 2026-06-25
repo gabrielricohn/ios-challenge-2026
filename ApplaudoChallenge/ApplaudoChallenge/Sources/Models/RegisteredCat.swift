@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct RegisteredCat: Codable, Identifiable, Equatable {
+struct RegisteredCat: Codable, Identifiable, Equatable, Hashable {
     let id: UUID
     let name: String
     let breed: String

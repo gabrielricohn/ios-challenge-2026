@@ -20,38 +20,30 @@ struct AddCatViewModelTests {
         AddCatViewModel(catService: catService, storage: storage)
     }
 
-    @Test func initShowsEmptyStateWhenNoSavedCatsExist() {
+    @Test func initStartsWithEmptySavedCats() {
         let viewModel = makeViewModel()
 
         #expect(viewModel.savedCats.isEmpty)
-        #expect(viewModel.isShowingForm == false)
-        #expect(viewModel.shouldShowEmptyState == true)
+        #expect(viewModel.currentStep == .name)
     }
 
-    @Test func initShowsFormWhenSavedCatsExist() {
+    @Test func initLoadsExistingSavedCats() {
         let storage = MockRegisteredCatStorage()
         storage.savedCats = [AddCatTestFixtures.sampleCat]
 
         let viewModel = makeViewModel(storage: storage)
 
         #expect(viewModel.savedCats.count == 1)
-        #expect(viewModel.isShowingForm == true)
-        #expect(viewModel.shouldShowEmptyState == false)
-    }
-
-    @Test func startAddingCatShowsForm() {
-        let viewModel = makeViewModel()
-
-        viewModel.startAddingCat()
-
-        #expect(viewModel.isShowingForm == true)
-        #expect(viewModel.shouldShowEmptyState == false)
+        #expect(viewModel.currentStep == .name)
     }
 
     @Test func canProceedValidatesNameStep() {
         let viewModel = makeViewModel()
 
         viewModel.name = "   "
+        #expect(viewModel.canProceed == false)
+
+        viewModel.name = "L"
         #expect(viewModel.canProceed == false)
 
         viewModel.name = "Luna"
@@ -116,6 +108,48 @@ struct AddCatViewModelTests {
         viewModel.goForward()
 
         #expect(viewModel.currentStep == .name)
+        #expect(viewModel.showValidationErrors == true)
+        #expect(viewModel.nameValidationError == "Name is required.")
+    }
+
+    @Test func goForwardClearsValidationErrorsWhenStepIsValid() {
+        let viewModel = makeViewModel()
+        viewModel.goForward()
+        #expect(viewModel.showValidationErrors == true)
+
+        viewModel.name = "Luna"
+        viewModel.goForward()
+
+        #expect(viewModel.currentStep == .breed)
+        #expect(viewModel.showValidationErrors == false)
+    }
+
+    @Test func nameValidationErrorRequiresMinimumLength() {
+        let viewModel = makeViewModel()
+        viewModel.name = "L"
+        viewModel.goForward()
+
+        #expect(viewModel.nameValidationError == "Name must be at least 2 characters.")
+    }
+
+    @Test func ageValidationErrorForNonNumericInput() {
+        let viewModel = makeViewModel()
+        viewModel.currentStep = .age
+        viewModel.age = "abc"
+        viewModel.goForward()
+
+        #expect(viewModel.ageValidationError == "Age must be a valid number.")
+    }
+
+    @Test func clearValidationErrorsHidesInlineMessages() {
+        let viewModel = makeViewModel()
+        viewModel.goForward()
+        #expect(viewModel.nameValidationError != nil)
+
+        viewModel.clearValidationErrors()
+
+        #expect(viewModel.showValidationErrors == false)
+        #expect(viewModel.nameValidationError == nil)
     }
 
     @Test func goBackReturnsToPreviousStep() {
