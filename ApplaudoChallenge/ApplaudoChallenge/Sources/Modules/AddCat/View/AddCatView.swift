@@ -10,23 +10,12 @@ import SwiftUI
 
 struct AddCatView: View {
 
+    @EnvironmentObject private var registeredCatsStore: RegisteredCatsStore
     @StateObject private var viewModel = AddCatViewModel()
 
     var body: some View {
-        Group {
-            if viewModel.shouldShowEmptyState {
-                EmptyStateView(
-                    systemImage: "cat",
-                    title: "No Cats Yet",
-                    message: "Start by adding your first cat breed to the collection.",
-                    buttonTitle: "Add a Cat",
-                    action: viewModel.startAddingCat
-                )
-            } else {
-                formContent
-            }
-        }
-        .background(AppTheme.Colors.background)
+        formContent
+            .background(AppTheme.Colors.background)
         .navigationTitle("Add Cat")
         .alert("Cat Saved!", isPresented: $viewModel.showSaveConfirmation) {
             Button("OK") {
@@ -46,10 +35,14 @@ struct AddCatView: View {
         }
         .onAppear {
             viewModel.loadSavedCats()
+            registeredCatsStore.refresh()
 
             if viewModel.currentStep == .breed, viewModel.breeds.isEmpty {
                 viewModel.fetchBreeds()
             }
+        }
+        .onChange(of: viewModel.savedCats) { _, _ in
+            registeredCatsStore.refresh()
         }
     }
 
@@ -275,4 +268,5 @@ struct AddCatView: View {
     NavigationStack {
         AddCatView()
     }
+    .environmentObject(RegisteredCatsStore())
 }

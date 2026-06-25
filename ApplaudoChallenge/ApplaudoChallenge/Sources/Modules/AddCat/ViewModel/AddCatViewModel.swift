@@ -70,7 +70,6 @@ final class AddCatViewModel: ObservableObject {
     @Published var showSaveConfirmation = false
     @Published var saveErrorMessage: String?
     @Published var savedCats: [RegisteredCat] = []
-    @Published var isShowingForm = false
     @Published var showValidationErrors = false
 
     // MARK: - Validation
@@ -111,10 +110,6 @@ final class AddCatViewModel: ObservableObject {
     }
 
     // MARK: - Computed Properties
-
-    var shouldShowEmptyState: Bool {
-        savedCats.isEmpty && !isShowingForm
-    }
 
     var stepTitles: [String] {
         Step.allCases.map(\.title)
@@ -186,20 +181,12 @@ final class AddCatViewModel: ObservableObject {
         self.catService = catService
         self.storage = storage
         loadSavedCats()
-
-        if !savedCats.isEmpty {
-            isShowingForm = true
-        }
     }
 
     // MARK: - Actions
 
     func loadSavedCats() {
         savedCats = storage.fetchAll()
-    }
-
-    func startAddingCat() {
-        isShowingForm = true
     }
 
     func goBack() {

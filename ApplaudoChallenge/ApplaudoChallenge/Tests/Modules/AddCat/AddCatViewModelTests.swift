@@ -20,32 +20,21 @@ struct AddCatViewModelTests {
         AddCatViewModel(catService: catService, storage: storage)
     }
 
-    @Test func initShowsEmptyStateWhenNoSavedCatsExist() {
+    @Test func initStartsWithEmptySavedCats() {
         let viewModel = makeViewModel()
 
         #expect(viewModel.savedCats.isEmpty)
-        #expect(viewModel.isShowingForm == false)
-        #expect(viewModel.shouldShowEmptyState == true)
+        #expect(viewModel.currentStep == .name)
     }
 
-    @Test func initShowsFormWhenSavedCatsExist() {
+    @Test func initLoadsExistingSavedCats() {
         let storage = MockRegisteredCatStorage()
         storage.savedCats = [AddCatTestFixtures.sampleCat]
 
         let viewModel = makeViewModel(storage: storage)
 
         #expect(viewModel.savedCats.count == 1)
-        #expect(viewModel.isShowingForm == true)
-        #expect(viewModel.shouldShowEmptyState == false)
-    }
-
-    @Test func startAddingCatShowsForm() {
-        let viewModel = makeViewModel()
-
-        viewModel.startAddingCat()
-
-        #expect(viewModel.isShowingForm == true)
-        #expect(viewModel.shouldShowEmptyState == false)
+        #expect(viewModel.currentStep == .name)
     }
 
     @Test func canProceedValidatesNameStep() {
