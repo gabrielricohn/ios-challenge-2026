@@ -43,9 +43,17 @@ struct CatBreedsView: View {
                                 imageSystemName: "cat"
                             )
                             .onTapGesture {
-                                print("cell tapped")
                                 selectedBreed = breed
                             }
+                            .onAppear {
+                                viewModel.loadMoreIfNeeded(for: breed)
+                            }
+                        }
+
+                        if viewModel.isLoadingMore {
+                            ProgressView()
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, AppTheme.Spacing.md)
                         }
                     }
                     .padding(.horizontal, AppTheme.Spacing.md)
@@ -58,7 +66,7 @@ struct CatBreedsView: View {
         }
         .navigationTitle("Cat Breeds")
         .navigationDestination(item: $selectedBreed) { breed in
-            
+            CatBreedDetailView(viewModel: CatBreedDetailViewModel(breed: breed))
         }
         .task {
             if viewModel.breeds.isEmpty {
