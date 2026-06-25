@@ -8,6 +8,12 @@
 import Foundation
 import Moya
 
+// MARK: - Network Configuration
+enum NetworkConfiguration {
+    static let apiBaseURL = URL(string: "https://api.thecatapi.com/v1/")!
+    static let imageBaseURL = URL(string: "https://cdn2.thecatapi.com/images/")!
+}
+
 // MARK: - Networking Target Type
 /// Describes a network endpoint. Conform to this protocol to define API targets.
 /// Each `request*` property maps to the corresponding Moya `TargetType` requirement.
@@ -27,7 +33,7 @@ extension NetworkingTargetType {
     // MARK: - Request Base URL
     // Shared across all endpoints; override per-target only if you need a different host.
     var requestBaseURL: URL {
-        return URL(string: "https://api.thecatapi.com/v1/")!
+        NetworkConfiguration.apiBaseURL
     }
 
     // MARK: - Request Headers
@@ -35,7 +41,7 @@ extension NetworkingTargetType {
     var requestHeaders: [String: String]? {
         [
             "Content-Type": "application/json",
-            "x-api-key": "YOUR-API-KEY" // TODO: Replace with your actual API key.
+            "x-api-key": "live_8bWK262vYZWXmB9aeVe0oWZZbbd0YPcRsKUHgiAe69HSLMIzclJu7dXB6dctDQQK" // TODO: Replace with your actual API key.
         ]
     }
 
@@ -83,6 +89,10 @@ extension NetworkingTargetType {
 
     var validationType: ValidationType {
         .successCodes // Only 2XX status codes are treated as successful responses.
+    }
+
+    var requestURL: URL {
+        baseURL.appending(path: path)
     }
 
     var cachePolicy: URLRequest.CachePolicy {

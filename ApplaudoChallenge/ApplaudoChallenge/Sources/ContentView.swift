@@ -1,33 +1,38 @@
 import SwiftUI
 
 public struct ContentView: View {
+    @State private var selectedTab: AppTab = .breeds
+
     public init() {}
 
     public var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             // MARK: - Tab 1: Cat List
-            // TODO: Replace placeholder with your CatListView
             NavigationStack {
-                Text("Cat List")
-                    .font(AppTheme.Fonts.title)
-                    .foregroundColor(AppTheme.Colors.textPrimary)
-                    .navigationTitle("Cats")
+                CatBreedsView()
             }
             .tabItem {
                 Label("Cats", systemImage: "cat")
             }
+            .tag(AppTab.breeds)
 
-            // MARK: - Tab 2: Add Cat
-            // TODO: Replace placeholder with your AddCatStepperView
+            // MARK: - Tab 2: Saved Cats
             NavigationStack {
-                Text("Add New Cat")
-                    .font(AppTheme.Fonts.title)
-                    .foregroundColor(AppTheme.Colors.textPrimary)
-                    .navigationTitle("Add Cat")
+                RegisteredCatsView(selectedTab: $selectedTab)
+            }
+            .tabItem {
+                Label("My Cats", systemImage: "heart.fill")
+            }
+            .tag(AppTab.myCats)
+
+            // MARK: - Tab 3: Add Cat
+            NavigationStack {
+                AddCatView()
             }
             .tabItem {
                 Label("Add Cat", systemImage: "plus.circle")
             }
+            .tag(AppTab.addCat)
         }
         .tint(AppTheme.Colors.primary)
     }
@@ -35,4 +40,5 @@ public struct ContentView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(RegisteredCatsStore())
 }
