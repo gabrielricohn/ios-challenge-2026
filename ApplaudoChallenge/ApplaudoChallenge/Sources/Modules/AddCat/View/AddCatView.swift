@@ -92,8 +92,12 @@ struct AddCatView: View {
                 label: "Name",
                 placeholder: "Enter your cat's name",
                 text: $viewModel.name,
+                errorMessage: viewModel.nameValidationError,
                 icon: "pawprint"
             )
+            .onChange(of: viewModel.name) { _, _ in
+                viewModel.clearValidationErrors()
+            }
 
         case .breed:
             breedStepContent
@@ -103,9 +107,13 @@ struct AddCatView: View {
                 label: "Age (years)",
                 placeholder: "Enter age in years",
                 text: $viewModel.age,
+                errorMessage: viewModel.ageValidationError,
                 keyboardType: .numberPad,
                 icon: "calendar"
             )
+            .onChange(of: viewModel.age) { _, _ in
+                viewModel.clearValidationErrors()
+            }
 
         case .description:
             descriptionStepContent
@@ -118,8 +126,12 @@ struct AddCatView: View {
             label: "Breed",
             placeholder: "Search or type a breed",
             text: $viewModel.breed,
+            errorMessage: viewModel.breedValidationError,
             icon: "cat"
         )
+        .onChange(of: viewModel.breed) { _, _ in
+            viewModel.clearValidationErrors()
+        }
 
         if viewModel.isLoadingBreeds {
             ProgressView("Loading breeds...")
@@ -179,9 +191,27 @@ struct AddCatView: View {
                 .clipShape(RoundedRectangle(cornerRadius: AppTheme.CornerRadius.small))
                 .overlay(
                     RoundedRectangle(cornerRadius: AppTheme.CornerRadius.small)
-                        .stroke(AppTheme.Colors.border, lineWidth: 1)
+                        .stroke(
+                            viewModel.descriptionValidationError == nil
+                                ? AppTheme.Colors.border
+                                : AppTheme.Colors.error,
+                            lineWidth: 1
+                        )
                 )
                 .scrollContentBackground(.hidden)
+                .onChange(of: viewModel.description) { _, _ in
+                    viewModel.clearValidationErrors()
+                }
+
+            if let errorMessage = viewModel.descriptionValidationError {
+                HStack(spacing: AppTheme.Spacing.xs) {
+                    Image(systemName: "exclamationmark.circle")
+                        .font(.caption)
+                    Text(errorMessage)
+                        .font(AppTheme.Fonts.caption)
+                }
+                .foregroundColor(AppTheme.Colors.error)
+            }
 
             reviewSummary
         }
@@ -220,10 +250,7 @@ struct AddCatView: View {
                 }
             }
 
-            AppButton(
-                title: viewModel.primaryButtonTitle,
-                isEnabled: viewModel.canProceed
-            ) {
+            AppButton(title: viewModel.primaryButtonTitle) {
                 viewModel.goForward()
             }
         }
